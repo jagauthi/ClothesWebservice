@@ -1,4 +1,4 @@
-package joseph.webservice;
+package joseph.webservice.classes;
 
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.stereotype.*;
@@ -18,9 +18,31 @@ CapstoneRestService-0.1.0.jar   You can run that, and it will do the same as if 
 @EnableAutoConfiguration
 public class TestController {
 
-    @RequestMapping("/HelloWorld")
+    @RequestMapping(value = "/getAccount")
     @ResponseBody
-    String helloWorld() {
-        return "Hello World!";
+    DataPacket getAccount() {
+    	Dao dao = new Dao();
+        return dao.getAccount("joseph");
+    }
+
+    @RequestMapping(value = "/getAccounts")
+    @ResponseBody
+    DataPacket[] getAccounts() {
+    	Dao dao = new Dao();
+        return dao.getAccounts();
+    }
+    
+    @RequestMapping(value = "/addAccount")
+    @ResponseBody
+    int addAccount(@RequestParam(value="user") String user, @RequestParam(value="pass") String pass) {
+    	Dao dao = new Dao();
+        return dao.addAccount(user, pass);
     }
 }
+
+
+
+
+
+
+
