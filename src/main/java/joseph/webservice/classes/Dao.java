@@ -20,7 +20,7 @@ public class Dao {
 		{
 			e.printStackTrace();
 		}
-	}S
+	}
 
 	public DataPacket getAccount(String username)
 	{
