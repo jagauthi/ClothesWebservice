@@ -3,6 +3,15 @@ package joseph.webservice.classes;
 import java.sql.*;
 import java.util.Properties;
 
+/* 	
+	Database Connection Details:
+		Server: sql9.freemysqlhosting.net
+		Name: sql9195935
+		Username: sql9195935
+		Password: lp5FPtqSb4
+		Port number: 3306
+ */
+
 public class Dao {
 	Connection conn;
 	public Dao()
@@ -11,10 +20,10 @@ public class Dao {
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
 			Properties properties = new Properties();
-			properties.setProperty("user", "dao");
-			properties.setProperty("password", "password");
+			properties.setProperty("user", "sql9195935");
+			properties.setProperty("password", "lp5FPtqSb4");
 			properties.setProperty("useSSL", "false");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/AppDB", properties);
+			conn = DriverManager.getConnection("jdbc:mysql://sql9.freemysqlhosting.net:3306/sql9195935", properties);
 		}
 		catch(Exception e)
 		{
