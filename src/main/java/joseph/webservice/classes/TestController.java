@@ -18,14 +18,14 @@ CapstoneRestService-0.1.0.jar   You can run that, and it will do the same as if 
 @EnableAutoConfiguration
 public class TestController {
 
-    @RequestMapping(value = "/getAccount")
+    @GetMapping(value = "/getAccount")
     @ResponseBody
     DataPacket getAccount() {
     	Dao dao = new Dao();
         return dao.getAccount("joseph");
     }
 
-    @RequestMapping(value = "/getAccounts")
+    @GetMapping(value = "/getAccounts")
     @ResponseBody
     DataPacket[] getAccounts() {
     	Dao dao = new Dao();
@@ -37,6 +37,13 @@ public class TestController {
     int addAccount(@RequestParam(value="user") String user, @RequestParam(value="pass") String pass) {
     	Dao dao = new Dao();
         return dao.addAccount(user, pass);
+    }
+    
+    @PostMapping(value = "/swaplol", consumes = "application/json")
+    @ResponseBody
+    DataPacket swaplol(@RequestBody DataPacket dataPacket) {
+    	Dao dao = new Dao();
+        return dataPacket.swap();
     }
 }
 
