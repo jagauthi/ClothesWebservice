@@ -1,15 +1,15 @@
-package joseph.webservice.classes;
+package joseph.webservice.pojos;
 
-public class DataPacket {
+public class LoginPacket {
 	
 	String value1, value2;
 	
-	public DataPacket() {
+	public LoginPacket() {
 		this.value1 = "test";
 		this.value2 = "test";
 	}
 	
-	public DataPacket(String value1, String value2) {
+	public LoginPacket(String value1, String value2) {
 		this.value1 = value1;
 		this.value2 = value2;
 	}
@@ -30,11 +30,16 @@ public class DataPacket {
 		this.value2 = value2;
 	}
 	
-	public DataPacket swap() {
+	public LoginPacket swap() {
 		String temp = value1;
 		value1 = value2;
 		value2 = temp;
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		return "DataPacket [value1: " + value1 + ", value2:" + value2 + "]";
 	}
 
 }
