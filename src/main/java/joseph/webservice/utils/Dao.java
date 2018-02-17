@@ -49,29 +49,55 @@ public class Dao {
 			e.printStackTrace();
 		}
 	}
-
-	public LoginPacket getAccount(String username)
-	{
+	
+	public LoginPacket login(LoginPacket loginPacket) {
 		try {			
-			log.info("Getting accounts");
+			log.info("Getting account");
 			Statement stmt = conn.createStatement() ;
-			String query = "select * from UserAccounts where user = '" + username + "';" ;
+			String query = "select * from UserAccounts where user = '" + loginPacket.getUser() + "';" ;
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
-			conn.close();
-			if(rs.getFetchSize() > 1) {
-				String response = "More than 1 account for this user";
-				log.log(Level.SEVERE, response);
-				return new LoginPacket(response, "lol");
-			}
-			else if (rs.getFetchSize() == 0) {
+			
+			if(!rs.next()) {
 				String response = "No account for this user";
 				log.log(Level.SEVERE, response);
+				conn.close();
 				return new LoginPacket(response, "lol");
 			}
 			else {
 				LoginPacket response = new LoginPacket(rs.getString("user"), rs.getString("pass"));
 				log.info("Returning: " + response.toString());
+				conn.close();
+				return response;
+			}
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			LoginPacket errorPacket = new LoginPacket(e.getMessage(), e.getStackTrace().toString());
+			e.printStackTrace();
+			log.log(Level.SEVERE, e.getMessage());
+			return errorPacket;
+		}
+	}
+
+	public LoginPacket getAccount(String username)
+	{
+		try {			
+			log.info("Getting account");
+			Statement stmt = conn.createStatement() ;
+			String query = "select * from UserAccounts where user = '" + username + "';" ;
+			log.info("Query: " + query);
+			ResultSet rs = stmt.executeQuery(query) ;
+			if(!rs.next()) {
+				String response = "No account for this user";
+				log.log(Level.SEVERE, response);
+				conn.close();
+				return new LoginPacket(response, "lol");
+			}
+			else {
+				LoginPacket response = new LoginPacket(rs.getString("user"), rs.getString("pass"));
+				log.info("Returning: " + response.toString());
+				conn.close();
 				return response;
 			}
 		} 
@@ -90,34 +116,21 @@ public class Dao {
 			log.info("Getting all accounts");
 			Statement stmt = conn.createStatement() ;
 			String query = "select * from UserAccounts;" ;
+			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
 			List<LoginPacket> responseList = new ArrayList<LoginPacket>();
-			conn.close();
-			
-			if(rs.getFetchSize() > 1) {
-				String response = "More than 1 account for this user";
-				log.log(Level.SEVERE, response);
-				responseList.add(new LoginPacket(response, "lol"));
-				return responseList;
-			}
-			else if (rs.getFetchSize() == 0) {
-				String response = "No account for this user";
-				log.log(Level.SEVERE, response);
-				responseList.add(new LoginPacket(response, "lol"));
-				return responseList;
-			}
-			else {
+			log.info("List of accounts: " );
+			while(rs.next()) {
 				LoginPacket response = new LoginPacket(rs.getString("user"), rs.getString("pass"));
-				log.info("Returning: " + response.toString());
+				log.info("\t" + response.toString() + "");
 				responseList.add(response);
-				return responseList;
 			}
+			conn.close();
+			return responseList;
 		} 
 		catch (Exception e) {
-			e.printStackTrace();
-			LoginPacket errorPacket = new LoginPacket(e.getMessage(), e.getStackTrace().toString());
-			e.printStackTrace();
-			log.log(Level.SEVERE, e.getMessage());
+			log.log(Level.SEVERE, "Exception: " + e.getMessage());
+			LoginPacket errorPacket = new LoginPacket(e.getMessage(), e.toString());
 			List<LoginPacket> responseList = new ArrayList<LoginPacket>();
 			responseList.add(errorPacket);
 			return responseList;

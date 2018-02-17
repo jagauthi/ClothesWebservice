@@ -23,19 +23,20 @@ CapstoneRestService-0.1.0.jar   You can run that, and it will do the same as if 
 @Controller
 @EnableAutoConfiguration
 public class LoginController {
-	
+
+	private final String login = "/login";
 	private final String getAccount = "/getAccount";
 	private final String getAccounts = "/getAccounts";
 	private final String addAccount = "/addAccount";
 
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
-
-    @GetMapping(value = getAccount)
+    
+    @RequestMapping(method = RequestMethod.POST, value = login)
     @ResponseBody
-    LoginPacket getAccount() {
+    LoginPacket login(@RequestBody LoginPacket loginRequest) {
     	Dao dao = new Dao();
-    	log.info("Recieved request: " + getAccount);
-        return dao.getAccount("joseph");
+    	log.info("Recieved request to " + login + " with " + loginRequest.toString());
+        return dao.login(loginRequest);
     }
 
     @GetMapping(value = getAccounts)
@@ -44,6 +45,14 @@ public class LoginController {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + getAccounts);
         return dao.getAccounts();
+    }
+
+    @GetMapping(value = getAccount)
+    @ResponseBody
+    LoginPacket getAccount(@RequestParam(value="user") String user) {
+    	Dao dao = new Dao();
+    	log.info("Recieved request: " + getAccount);
+        return dao.getAccount(user);
     }
     
     @RequestMapping(value = addAccount)

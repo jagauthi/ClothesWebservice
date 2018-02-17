@@ -2,44 +2,44 @@ package joseph.webservice.pojos;
 
 public class LoginPacket {
 	
-	String value1, value2;
+	String user, pass;
 	
 	public LoginPacket() {
-		this.value1 = "test";
-		this.value2 = "test";
+		this.user = "test";
+		this.pass = "test";
 	}
 	
-	public LoginPacket(String value1, String value2) {
-		this.value1 = value1;
-		this.value2 = value2;
+	public LoginPacket(String user, String pass) {
+		this.user = user;
+		this.pass = pass;
 	}
 
-	public String getValue1() {
-		return value1;
+	public String getUser() {
+		return user;
 	}
 
-	public void setValue1(String value1) {
-		this.value1 = value1;
+	public void setUser(String user) {
+		this.user = user;
 	}
 
-	public String getValue2() {
-		return value2;
+	public String getPass() {
+		return pass;
 	}
 
-	public void setValue2(String value2) {
-		this.value2 = value2;
+	public void setPass(String pass) {
+		this.pass = pass;
 	}
 	
 	public LoginPacket swap() {
-		String temp = value1;
-		value1 = value2;
-		value2 = temp;
+		String temp = user;
+		user = pass;
+		pass = temp;
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "DataPacket [value1: " + value1 + ", value2:" + value2 + "]";
+		return "DataPacket [user: " + user + ", pass:" + pass + "]";
 	}
 
 }
