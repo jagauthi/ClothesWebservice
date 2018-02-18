@@ -1,5 +1,6 @@
 package joseph.webservice.controllers;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -7,7 +8,7 @@ import org.springframework.boot.autoconfigure.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
-import joseph.webservice.pojos.LoginPacket;
+import joseph.webservice.pojos.LoginRequest;
 import joseph.webservice.utils.Dao;
 
 /*
@@ -22,6 +23,7 @@ CapstoneRestService-0.1.0.jar   You can run that, and it will do the same as if 
 
 @Controller
 @EnableAutoConfiguration
+@RequestMapping(value = "/login")
 public class LoginController {
 
 	private final String login = "/login";
@@ -30,10 +32,10 @@ public class LoginController {
 	private final String addAccount = "/addAccount";
 
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
-    
+	
     @RequestMapping(method = RequestMethod.POST, value = login)
     @ResponseBody
-    LoginPacket login(@RequestBody LoginPacket loginRequest) {
+    LoginRequest login(@RequestBody LoginRequest loginRequest) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request to " + login + " with " + loginRequest.toString());
         return dao.login(loginRequest);
@@ -41,7 +43,7 @@ public class LoginController {
 
     @GetMapping(value = getAccounts)
     @ResponseBody
-    List<LoginPacket> getAccounts() {
+    List<LoginRequest> getAccounts() throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + getAccounts);
         return dao.getAccounts();
@@ -49,7 +51,7 @@ public class LoginController {
 
     @GetMapping(value = getAccount)
     @ResponseBody
-    LoginPacket getAccount(@RequestParam(value="user") String user) {
+    LoginRequest getAccount(@RequestParam(value="user") String user) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + getAccount);
         return dao.getAccount(user);
@@ -57,7 +59,7 @@ public class LoginController {
     
     @RequestMapping(value = addAccount)
     @ResponseBody
-    int addAccount(@RequestParam(value="user") String user, @RequestParam(value="pass") String pass) {
+    int addAccount(@RequestParam(value="user") String user, @RequestParam(value="pass") String pass) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + addAccount);
         return dao.addAccount(user, pass);
@@ -65,7 +67,7 @@ public class LoginController {
     
     @PostMapping(value = "/swaplol", consumes = "application/json")
     @ResponseBody
-    LoginPacket swaplol(@RequestBody LoginPacket dataPacket) {
+    LoginRequest swaplol(@RequestBody LoginRequest dataPacket) {
     	Dao dao = new Dao();
     	log.info("Lol who's using this :P");
         return dataPacket.swap();

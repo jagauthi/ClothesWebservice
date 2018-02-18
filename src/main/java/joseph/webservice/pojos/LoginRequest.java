@@ -1,15 +1,15 @@
 package joseph.webservice.pojos;
 
-public class LoginPacket {
+public class LoginRequest {
 	
 	String user, pass;
-	
-	public LoginPacket() {
-		this.user = "test";
-		this.pass = "test";
+
+	@Override
+	public String toString() {
+		return "DataPacket [user: " + user + ", pass:" + pass + "]";
 	}
 	
-	public LoginPacket(String user, String pass) {
+	public LoginRequest(String user, String pass) {
 		this.user = user;
 		this.pass = pass;
 	}
@@ -30,16 +30,10 @@ public class LoginPacket {
 		this.pass = pass;
 	}
 	
-	public LoginPacket swap() {
+	public LoginRequest swap() {
 		String temp = user;
 		user = pass;
 		pass = temp;
 		return this;
 	}
-
-	@Override
-	public String toString() {
-		return "DataPacket [user: " + user + ", pass:" + pass + "]";
-	}
-
 }

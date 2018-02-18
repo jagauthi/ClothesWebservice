@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import joseph.webservice.pojos.LoginPacket;
+import joseph.webservice.pojos.*;
 
 /* 	
  	To view database in a browser:
@@ -31,8 +31,7 @@ public class Dao {
 	String pass = "rDlDd1QCsz";
 	String address = "jdbc:mysql://sql3.freesqldatabase.com:3306/sql3205145";
 	
-	public Dao()
-	{
+	public Dao() {
 		conn = null;
 		try{
 			log.info("Connecting to " + address);
@@ -44,13 +43,12 @@ public class Dao {
 			conn = DriverManager.getConnection(address, properties);
 			log.info("Connected!");
 		}
-		catch(Exception e)
-		{
+		catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public LoginPacket login(LoginPacket loginPacket) {
+	public LoginRequest login(LoginRequest loginPacket) throws SQLException {
 		try {			
 			log.info("Getting account");
 			Statement stmt = conn.createStatement() ;
@@ -62,10 +60,10 @@ public class Dao {
 				String response = "No account for this user";
 				log.log(Level.SEVERE, response);
 				conn.close();
-				return new LoginPacket(response, "lol");
+				return new LoginRequest(response, "lol");
 			}
 			else {
-				LoginPacket response = new LoginPacket(rs.getString("user"), rs.getString("pass"));
+				LoginRequest response = new LoginRequest(rs.getString("user"), rs.getString("pass"));
 				log.info("Returning: " + response.toString());
 				conn.close();
 				return response;
@@ -73,15 +71,15 @@ public class Dao {
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
-			LoginPacket errorPacket = new LoginPacket(e.getMessage(), e.getStackTrace().toString());
+			LoginRequest errorPacket = new LoginRequest(e.getMessage(), e.getStackTrace().toString());
 			e.printStackTrace();
 			log.log(Level.SEVERE, e.getMessage());
+			conn.close();
 			return errorPacket;
 		}
 	}
 
-	public LoginPacket getAccount(String username)
-	{
+	public LoginRequest getAccount(String username) throws SQLException {
 		try {			
 			log.info("Getting account");
 			Statement stmt = conn.createStatement() ;
@@ -92,10 +90,10 @@ public class Dao {
 				String response = "No account for this user";
 				log.log(Level.SEVERE, response);
 				conn.close();
-				return new LoginPacket(response, "lol");
+				return new LoginRequest(response, "lol");
 			}
 			else {
-				LoginPacket response = new LoginPacket(rs.getString("user"), rs.getString("pass"));
+				LoginRequest response = new LoginRequest(rs.getString("user"), rs.getString("pass"));
 				log.info("Returning: " + response.toString());
 				conn.close();
 				return response;
@@ -103,25 +101,25 @@ public class Dao {
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
-			LoginPacket errorPacket = new LoginPacket(e.getMessage(), e.getStackTrace().toString());
+			LoginRequest errorPacket = new LoginRequest(e.getMessage(), e.getStackTrace().toString());
 			e.printStackTrace();
 			log.log(Level.SEVERE, e.getMessage());
+			conn.close();
 			return errorPacket;
 		}
 	}
 	
-	public List<LoginPacket> getAccounts()
-	{
+	public List<LoginRequest> getAccounts() throws SQLException {
 		try {			
 			log.info("Getting all accounts");
 			Statement stmt = conn.createStatement() ;
 			String query = "select * from UserAccounts;" ;
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
-			List<LoginPacket> responseList = new ArrayList<LoginPacket>();
+			List<LoginRequest> responseList = new ArrayList<LoginRequest>();
 			log.info("List of accounts: " );
 			while(rs.next()) {
-				LoginPacket response = new LoginPacket(rs.getString("user"), rs.getString("pass"));
+				LoginRequest response = new LoginRequest(rs.getString("user"), rs.getString("pass"));
 				log.info("\t" + response.toString() + "");
 				responseList.add(response);
 			}
@@ -130,15 +128,15 @@ public class Dao {
 		} 
 		catch (Exception e) {
 			log.log(Level.SEVERE, "Exception: " + e.getMessage());
-			LoginPacket errorPacket = new LoginPacket(e.getMessage(), e.toString());
-			List<LoginPacket> responseList = new ArrayList<LoginPacket>();
+			LoginRequest errorPacket = new LoginRequest(e.getMessage(), e.toString());
+			List<LoginRequest> responseList = new ArrayList<LoginRequest>();
 			responseList.add(errorPacket);
+			conn.close();
 			return responseList;
 		}
 	}
 	
-	public int addAccount(String username, String password)
-	{
+	public int addAccount(String username, String password) throws SQLException {
 		try {			
 			log.info("Adding user: " + username + ", " + password);
 			Statement stmt = conn.createStatement() ;
@@ -146,12 +144,42 @@ public class Dao {
 			log.info("Query: " + query);
 			int numRowsAffected = stmt.executeUpdate(query) ;
 			log.info("Added " + numRowsAffected + " users");
+			conn.close();
 			return numRowsAffected;
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
 			log.log(Level.SEVERE, e.getMessage());
+			conn.close();
 			return 0;
+		}
+	}
+	
+	public List<ItemInfoResponse> getItems() throws SQLException {
+		try {			
+			log.info("Getting all items");
+			Statement stmt = conn.createStatement() ;
+			String query = "select * from Items;" ;
+			log.info("Query: " + query);
+			ResultSet rs = stmt.executeQuery(query) ;
+			List<ItemInfoResponse> responseList = new ArrayList<ItemInfoResponse>();
+			log.info("List of items: " );
+			while(rs.next()) {
+				ItemInfoResponse response = new ItemInfoResponse(rs.getInt("itemNumber"), rs.getFloat("cost"),
+						rs.getFloat("price"), rs.getString("description"), rs.getString("category"));
+				log.info("\t" + response.toString() + "");
+				responseList.add(response);
+			}
+			conn.close();
+			return responseList;
+		} 
+		catch (Exception e) {
+			log.log(Level.SEVERE, "Exception: " + e.getMessage());
+			ItemInfoResponse errorPacket = new ItemInfoResponse(0, 0, 0, e.getMessage(), "");
+			List<ItemInfoResponse> responseList = new ArrayList<ItemInfoResponse>();
+			responseList.add(errorPacket);
+			conn.close();
+			return responseList;
 		}
 	}
 }
