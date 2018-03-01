@@ -156,7 +156,7 @@ public class Dao {
 	}
 	
 	public List<ItemInfoResponse> getItems() throws SQLException {
-		try {			
+		try {
 			log.info("Getting all items");
 			Statement stmt = conn.createStatement() ;
 			String query = "select * from Items;" ;
