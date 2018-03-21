@@ -2,16 +2,26 @@ package joseph.webservice.pojos;
 
 public class LoginRequest {
 	
+	int id;
 	String user, pass;
 
 	@Override
 	public String toString() {
-		return "DataPacket [user: " + user + ", pass:" + pass + "]";
+		return "DataPacket [id: " + id + ", user: " + user + ", pass:" + pass + "]";
 	}
 	
-	public LoginRequest(String user, String pass) {
+	public LoginRequest(int id, String user, String pass) {
+		this.id = id;
 		this.user = user;
 		this.pass = pass;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getUser() {

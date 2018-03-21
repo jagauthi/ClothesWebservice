@@ -60,10 +60,10 @@ public class Dao {
 				String response = "No account for this user";
 				log.log(Level.SEVERE, response);
 				conn.close();
-				return new LoginRequest(response, "lol");
+				return new LoginRequest(0, response, "lol");
 			}
 			else {
-				LoginRequest response = new LoginRequest(rs.getString("user"), rs.getString("pass"));
+				LoginRequest response = new LoginRequest(rs.getInt("id"), rs.getString("user"), rs.getString("pass"));
 				log.info("Returning: " + response.toString());
 				conn.close();
 				return response;
@@ -71,7 +71,7 @@ public class Dao {
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
-			LoginRequest errorPacket = new LoginRequest(e.getMessage(), e.getStackTrace().toString());
+			LoginRequest errorPacket = new LoginRequest(0, e.getMessage(), e.getStackTrace().toString());
 			e.printStackTrace();
 			log.log(Level.SEVERE, e.getMessage());
 			conn.close();
@@ -90,10 +90,10 @@ public class Dao {
 				String response = "No account for this user";
 				log.log(Level.SEVERE, response);
 				conn.close();
-				return new LoginRequest(response, "lol");
+				return new LoginRequest(0, response, "lol");
 			}
 			else {
-				LoginRequest response = new LoginRequest(rs.getString("user"), rs.getString("pass"));
+				LoginRequest response = new LoginRequest(rs.getInt("id"), rs.getString("user"), rs.getString("pass"));
 				log.info("Returning: " + response.toString());
 				conn.close();
 				return response;
@@ -101,7 +101,7 @@ public class Dao {
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
-			LoginRequest errorPacket = new LoginRequest(e.getMessage(), e.getStackTrace().toString());
+			LoginRequest errorPacket = new LoginRequest(0, e.getMessage(), e.getStackTrace().toString());
 			e.printStackTrace();
 			log.log(Level.SEVERE, e.getMessage());
 			conn.close();
@@ -119,7 +119,7 @@ public class Dao {
 			List<LoginRequest> responseList = new ArrayList<LoginRequest>();
 			log.info("List of accounts: " );
 			while(rs.next()) {
-				LoginRequest response = new LoginRequest(rs.getString("user"), rs.getString("pass"));
+				LoginRequest response = new LoginRequest(rs.getInt("id"), rs.getString("user"), rs.getString("pass"));
 				log.info("\t" + response.toString() + "");
 				responseList.add(response);
 			}
@@ -128,7 +128,7 @@ public class Dao {
 		} 
 		catch (Exception e) {
 			log.log(Level.SEVERE, "Exception: " + e.getMessage());
-			LoginRequest errorPacket = new LoginRequest(e.getMessage(), e.toString());
+			LoginRequest errorPacket = new LoginRequest(0, e.getMessage(), e.toString());
 			List<LoginRequest> responseList = new ArrayList<LoginRequest>();
 			responseList.add(errorPacket);
 			conn.close();
