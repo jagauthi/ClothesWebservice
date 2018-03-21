@@ -27,20 +27,25 @@ public class Dao {
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
 	Connection conn;
 	
-	String user = "sql3205145";
-	String pass = "rDlDd1QCsz";
-	String address = "jdbc:mysql://sql3.freesqldatabase.com:3306/sql3205145";
+	public static final String SELECT_FROM_USERS = "select * from UserAccounts ";
+	public static final String WHERE_USERNAME = "where username = '";
+	public static final String INSERT_TO_USERS = "insert into UserAccounts ";
+	public static final String SELECT_FROM_ITEMS = "select * from Items ";
+	
+	String sqlUser = "sql3205145";
+	String sqlPass = "rDlDd1QCsz";
+	String sqlAddress = "jdbc:mysql://sql3.freesqldatabase.com:3306/sql3205145";
 	
 	public Dao() {
 		conn = null;
 		try{
-			log.info("Connecting to " + address);
+			log.info("Connecting to " + sqlAddress);
 			Class.forName("com.mysql.jdbc.Driver");
 			Properties properties = new Properties();
-			properties.setProperty("user", user);
-			properties.setProperty("password", pass);
+			properties.setProperty("user", sqlUser);
+			properties.setProperty("password", sqlPass);
 			properties.setProperty("useSSL", "false");
-			conn = DriverManager.getConnection(address, properties);
+			conn = DriverManager.getConnection(sqlAddress, properties);
 			log.info("Connected!");
 		}
 		catch(Exception e) {
@@ -52,7 +57,7 @@ public class Dao {
 		try {			
 			log.info("Getting account");
 			Statement stmt = conn.createStatement() ;
-			String query = "select * from UserAccounts where user = '" + loginPacket.getUser() + "';" ;
+			String query = SELECT_FROM_USERS + WHERE_USERNAME + loginPacket.getUsername() + "';" ;
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
 			
@@ -60,18 +65,18 @@ public class Dao {
 				String response = "No account for this user";
 				log.log(Level.SEVERE, response);
 				conn.close();
-				return new LoginRequest(0, response, "lol");
+				return new LoginRequest(0, response, "lol", "");
 			}
 			else {
-				LoginRequest response = new LoginRequest(rs.getInt("id"), rs.getString("user"), rs.getString("pass"));
+				LoginRequest response = new LoginRequest(rs.getInt("userId"), rs.getString("username"), 
+								rs.getString("password"), rs.getString("email"));
 				log.info("Returning: " + response.toString());
 				conn.close();
 				return response;
 			}
 		} 
 		catch (Exception e) {
-			e.printStackTrace();
-			LoginRequest errorPacket = new LoginRequest(0, e.getMessage(), e.getStackTrace().toString());
+			LoginRequest errorPacket = new LoginRequest(0, e.getMessage(), "", "");
 			e.printStackTrace();
 			log.log(Level.SEVERE, e.getMessage());
 			conn.close();
@@ -83,25 +88,25 @@ public class Dao {
 		try {			
 			log.info("Getting account");
 			Statement stmt = conn.createStatement() ;
-			String query = "select * from UserAccounts where user = '" + username + "';" ;
+			String query = SELECT_FROM_USERS + WHERE_USERNAME + username + "';" ;
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
 			if(!rs.next()) {
 				String response = "No account for this user";
 				log.log(Level.SEVERE, response);
 				conn.close();
-				return new LoginRequest(0, response, "lol");
+				return new LoginRequest(0, response, "lol", "");
 			}
 			else {
-				LoginRequest response = new LoginRequest(rs.getInt("id"), rs.getString("user"), rs.getString("pass"));
+				LoginRequest response = new LoginRequest(rs.getInt("userId"), rs.getString("username"), 
+								rs.getString("password"), rs.getString("email"));
 				log.info("Returning: " + response.toString());
 				conn.close();
 				return response;
 			}
 		} 
 		catch (Exception e) {
-			e.printStackTrace();
-			LoginRequest errorPacket = new LoginRequest(0, e.getMessage(), e.getStackTrace().toString());
+			LoginRequest errorPacket = new LoginRequest(0, e.getMessage(), "", "");
 			e.printStackTrace();
 			log.log(Level.SEVERE, e.getMessage());
 			conn.close();
@@ -113,13 +118,14 @@ public class Dao {
 		try {			
 			log.info("Getting all accounts");
 			Statement stmt = conn.createStatement() ;
-			String query = "select * from UserAccounts;" ;
+			String query = SELECT_FROM_USERS + ";" ;
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
 			List<LoginRequest> responseList = new ArrayList<LoginRequest>();
 			log.info("List of accounts: " );
 			while(rs.next()) {
-				LoginRequest response = new LoginRequest(rs.getInt("id"), rs.getString("user"), rs.getString("pass"));
+				LoginRequest response = new LoginRequest(rs.getInt("userId"), rs.getString("username"), 
+								rs.getString("password"), rs.getString("email"));
 				log.info("\t" + response.toString() + "");
 				responseList.add(response);
 			}
@@ -128,7 +134,7 @@ public class Dao {
 		} 
 		catch (Exception e) {
 			log.log(Level.SEVERE, "Exception: " + e.getMessage());
-			LoginRequest errorPacket = new LoginRequest(0, e.getMessage(), e.toString());
+			LoginRequest errorPacket = new LoginRequest(0, e.getMessage(), "", "");
 			List<LoginRequest> responseList = new ArrayList<LoginRequest>();
 			responseList.add(errorPacket);
 			conn.close();
@@ -136,11 +142,12 @@ public class Dao {
 		}
 	}
 	
-	public int addAccount(String username, String password) throws SQLException {
+	public int addAccount(String username, String password, String email) throws SQLException {
 		try {			
-			log.info("Adding user: " + username + ", " + password);
+			log.info("Adding user: (" + username + ", " + password + ")");
 			Statement stmt = conn.createStatement() ;
-			String query = "insert into users values('" + username + "', '" + password + "');" ;
+			String query = INSERT_TO_USERS + " values"
+					+ "(0, '" + username + "', '" + password + "', + '" + email + "');" ;
 			log.info("Query: " + query);
 			int numRowsAffected = stmt.executeUpdate(query) ;
 			log.info("Added " + numRowsAffected + " users");
@@ -159,7 +166,7 @@ public class Dao {
 		try {
 			log.info("Getting all items");
 			Statement stmt = conn.createStatement() ;
-			String query = "select * from Items;" ;
+			String query = SELECT_FROM_ITEMS + ";" ;
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
 			List<ItemInfoResponse> responseList = new ArrayList<ItemInfoResponse>();

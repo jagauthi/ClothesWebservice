@@ -2,48 +2,50 @@ package joseph.webservice.pojos;
 
 public class LoginRequest {
 	
-	int id;
-	String user, pass;
+	int userId;
+	String username, password, email;
 
 	@Override
 	public String toString() {
-		return "DataPacket [id: " + id + ", user: " + user + ", pass:" + pass + "]";
+		return "DataPacket [userId: " + userId + ", username: " + username + ", password: " + password + ", email: " + email + "]";
 	}
 	
-	public LoginRequest(int id, String user, String pass) {
-		this.id = id;
-		this.user = user;
-		this.pass = pass;
+	public LoginRequest(int userId, String username, String password, String email) {
+		this.userId = userId;
+		this.username = username;
+		this.password = password;
+		this.email = email;
 	}
 
-	public int getId() {
-		return id;
+	public int setUserId() {
+		return userId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
-	public String getUser() {
-		return user;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUser(String user) {
-		this.user = user;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	public String getPass() {
-		return pass;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setPass(String pass) {
-		this.pass = pass;
+	public void setPassword(String password) {
+		this.password = password;
 	}
-	
-	public LoginRequest swap() {
-		String temp = user;
-		user = pass;
-		pass = temp;
-		return this;
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }

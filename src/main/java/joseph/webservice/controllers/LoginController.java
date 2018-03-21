@@ -65,7 +65,7 @@ public class LoginController {
 
     @GetMapping(value = getAccount)
     @ResponseBody
-    LoginRequest getAccount(@RequestParam(value="user") String user) throws SQLException {
+    LoginRequest getAccount(@RequestParam(value="username") String user) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + getAccount);
         return dao.getAccount(user);
@@ -73,18 +73,11 @@ public class LoginController {
     
     @RequestMapping(value = addAccount)
     @ResponseBody
-    int addAccount(@RequestParam(value="user") String user, @RequestParam(value="pass") String pass) throws SQLException {
+    int addAccount(@RequestParam(value="username") String user, @RequestParam(value="password") String pass, 
+    				@RequestParam(value="email") String email) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + addAccount);
-        return dao.addAccount(user, pass);
-    }
-    
-    @PostMapping(value = "/swaplol", consumes = "application/json")
-    @ResponseBody
-    LoginRequest swaplol(@RequestBody LoginRequest dataPacket) {
-    	Dao dao = new Dao();
-    	log.info("Lol who's using this :P");
-        return dataPacket.swap();
+        return dao.addAccount(user, pass, email);
     }
 }
 
