@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,7 @@ ClothesWebservice-0.1.0.jar   You can run that, and it will do the same as if yo
 "mvnw spring-boot:run", then you can hit the url previously given.
 */
 
+@CrossOrigin
 @Controller
 @EnableAutoConfiguration
 public class LoginController {
@@ -36,6 +39,24 @@ public class LoginController {
 	private final String addAccount = "/addAccount";
 
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
+	
+	@RequestMapping(value= "/**", method=RequestMethod.OPTIONS)
+	public void corsHeaders(HttpServletResponse response) {
+		log.info("HELLO!!!");
+	    response.addHeader("Access-Control-Allow-Origin", "*");
+	    response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+	    response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with");
+	    response.addHeader("Access-Control-Max-Age", "3600");
+	}
+	
+	@RequestMapping(value= "/addUser", method=RequestMethod.OPTIONS)
+	public void corsHeaders2(HttpServletResponse response) {
+		log.info("HELLO!!!");
+	    response.addHeader("Access-Control-Allow-Origin", "*");
+	    response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+	    response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with");
+	    response.addHeader("Access-Control-Max-Age", "3600");
+	}
 
     @GetMapping(value = healthCheck)
     @ResponseBody
@@ -70,7 +91,7 @@ public class LoginController {
     	log.info("Recieved request: " + getAccount);
         return dao.getAccount(user);
     }
-    
+
     @RequestMapping(method = RequestMethod.POST, value = addAccount)
     @ResponseBody
     int addAccount(@RequestBody LoginRequest loginRequest) throws SQLException {
