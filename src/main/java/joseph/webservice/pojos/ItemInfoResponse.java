@@ -5,6 +5,10 @@ public class ItemInfoResponse {
 	int itemNumber;
 	float cost, price;
 	String description, category;
+	
+	public ItemInfoResponse() {
+		super();
+	}
 
 	public ItemInfoResponse(int itemNumber, float cost, float price, String description, String category) {
 		super();

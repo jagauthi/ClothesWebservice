@@ -142,12 +142,12 @@ public class Dao {
 		}
 	}
 	
-	public int addAccount(String username, String password, String email) throws SQLException {
+	public int addAccount(LoginRequest user) throws SQLException {
 		try {			
-			log.info("Adding user: (" + username + ", " + password + ")");
+			log.info("Adding user: " + user.getUsername() + ", " + user.getPassword() + ", " + user.getEmail());
 			Statement stmt = conn.createStatement() ;
 			String query = INSERT_TO_USERS + " values"
-					+ "(0, '" + username + "', '" + password + "', + '" + email + "');" ;
+					+ "(0, '" + user.getUsername() + "', '" + user.getPassword() + "', + '" + user.getEmail() + "');" ;
 			log.info("Query: " + query);
 			int numRowsAffected = stmt.executeUpdate(query) ;
 			log.info("Added " + numRowsAffected + " users");

@@ -36,14 +36,6 @@ public class LoginController {
 	private final String addAccount = "/addAccount";
 
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
-	
-    @RequestMapping(method = RequestMethod.POST, value = login)
-    @ResponseBody
-    LoginRequest login(@RequestBody LoginRequest loginRequest) throws SQLException {
-    	Dao dao = new Dao();
-    	log.info("Recieved request to " + login + " with " + loginRequest.toString());
-        return dao.login(loginRequest);
-    }
 
     @GetMapping(value = healthCheck)
     @ResponseBody
@@ -53,6 +45,14 @@ public class LoginController {
     	response.put("Healthcheck", "Success");
     	response.put("Current time", new Date().toString());
         return response;
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, value = login)
+    @ResponseBody
+    LoginRequest login(@RequestBody LoginRequest loginRequest) throws SQLException {
+    	Dao dao = new Dao();
+    	log.info("Recieved request to " + login + " with " + loginRequest.toString());
+        return dao.login(loginRequest);
     }
 
     @GetMapping(value = getAccounts)
@@ -71,13 +71,12 @@ public class LoginController {
         return dao.getAccount(user);
     }
     
-    @RequestMapping(value = addAccount)
+    @RequestMapping(method = RequestMethod.POST, value = addAccount)
     @ResponseBody
-    int addAccount(@RequestParam(value="username") String user, @RequestParam(value="password") String pass, 
-    				@RequestParam(value="email") String email) throws SQLException {
+    int addAccount(@RequestBody LoginRequest loginRequest) throws SQLException {
     	Dao dao = new Dao();
-    	log.info("Recieved request: " + addAccount);
-        return dao.addAccount(user, pass, email);
+    	log.info("Recieved request to " + addAccount + " with " + loginRequest.toString());
+        return dao.addAccount(loginRequest);
     }
 }
 

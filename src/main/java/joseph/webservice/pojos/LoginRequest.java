@@ -10,6 +10,10 @@ public class LoginRequest {
 		return "DataPacket [userId: " + userId + ", username: " + username + ", password: " + password + ", email: " + email + "]";
 	}
 	
+	public LoginRequest() {
+		super();
+	}
+	
 	public LoginRequest(int userId, String username, String password, String email) {
 		this.userId = userId;
 		this.username = username;
