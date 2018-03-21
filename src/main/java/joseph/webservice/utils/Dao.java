@@ -30,6 +30,7 @@ public class Dao {
 	public static final String SELECT_FROM_USERS = "select * from UserAccounts ";
 	public static final String WHERE_USERNAME = "where username = '";
 	public static final String INSERT_TO_USERS = "insert into UserAccounts ";
+	public static final String DELETE_FROM_USERS = "delete from UserAccounts ";
 	public static final String SELECT_FROM_ITEMS = "select * from Items ";
 	
 	String sqlUser = "sql3205145";
@@ -151,6 +152,25 @@ public class Dao {
 			log.info("Query: " + query);
 			int numRowsAffected = stmt.executeUpdate(query) ;
 			log.info("Added " + numRowsAffected + " users");
+			conn.close();
+			return numRowsAffected;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			log.log(Level.SEVERE, e.getMessage());
+			conn.close();
+			return 0;
+		}
+	}
+	
+	public int deleteAccount(String username) throws SQLException {
+		try {			
+			log.info("Deleting user: " + username);
+			Statement stmt = conn.createStatement() ;
+			String query = DELETE_FROM_USERS + WHERE_USERNAME + username + "';";
+			log.info("Query: " + query);
+			int numRowsAffected = stmt.executeUpdate(query) ;
+			log.info("Deleted " + numRowsAffected + " users");
 			conn.close();
 			return numRowsAffected;
 		} 

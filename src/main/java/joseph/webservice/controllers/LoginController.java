@@ -37,6 +37,7 @@ public class LoginController {
 	private final String getAccount = "/getAccount";
 	private final String getAccounts = "/getAccounts";
 	private final String addAccount = "/addAccount";
+	private final String deleteAccount = "/deleteAccount";
 
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
 	
@@ -98,6 +99,14 @@ public class LoginController {
     	Dao dao = new Dao();
     	log.info("Recieved request to " + addAccount + " with " + loginRequest.toString());
         return dao.addAccount(loginRequest);
+    }
+
+    @GetMapping(value = deleteAccount)
+    @ResponseBody
+    int deleteAccount(@RequestParam(value="username") String user) throws SQLException {
+    	Dao dao = new Dao();
+    	log.info("Recieved request: " + deleteAccount);
+        return dao.deleteAccount(user);
     }
 }
 
