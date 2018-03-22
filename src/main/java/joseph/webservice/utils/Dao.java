@@ -56,22 +56,33 @@ public class Dao {
 	
 	public LoginRequest login(LoginRequest loginPacket) throws SQLException {
 		try {			
-			log.info("Getting account");
+			log.info("Getting account for: " + loginPacket.getUsername() 
+						+ " trying password " + loginPacket.getPassword());
 			Statement stmt = conn.createStatement() ;
 			String query = SELECT_FROM_USERS + WHERE_USERNAME + loginPacket.getUsername() + "';" ;
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
-			
 			if(!rs.next()) {
 				String response = "No account for this user";
 				log.log(Level.SEVERE, response);
 				conn.close();
-				return new LoginRequest(0, response, "lol", "");
+				return new LoginRequest(0, response, response, response);
 			}
 			else {
-				LoginRequest response = new LoginRequest(rs.getInt("userId"), rs.getString("username"), 
+				LoginRequest response;
+				LoginRequest userAccount = new LoginRequest(rs.getInt("userId"), rs.getString("username"), 
 								rs.getString("password"), rs.getString("email"));
-				log.info("Returning: " + response.toString());
+				if(userAccount.getUsername().equals(loginPacket.getUsername())
+						&& userAccount.getPassword().equals(loginPacket.getPassword())) {
+					log.info("Returning: " + userAccount.toString());
+					response = userAccount;
+				}
+				else {
+					log.info("Wrong password entered for " + loginPacket.getUsername());
+					log.info("\tEntered: " + loginPacket.getPassword());
+					log.info("\tCorrect: " + userAccount.getPassword());
+					response = new LoginRequest(-1, "Wrong password", "Wrong password", "Wrong password");
+				}
 				conn.close();
 				return response;
 			}
@@ -96,7 +107,7 @@ public class Dao {
 				String response = "No account for this user";
 				log.log(Level.SEVERE, response);
 				conn.close();
-				return new LoginRequest(0, response, "lol", "");
+				return new LoginRequest(0, response, response, response);
 			}
 			else {
 				LoginRequest response = new LoginRequest(rs.getInt("userId"), rs.getString("username"), 
