@@ -1,16 +1,16 @@
 package joseph.webservice.pojos;
 
-public class ItemInfoResponse {
+public class ItemInfo {
 	
 	int itemNumber;
 	float cost, price;
 	String description, category;
 	
-	public ItemInfoResponse() {
+	public ItemInfo() {
 		super();
 	}
 
-	public ItemInfoResponse(int itemNumber, float cost, float price, String description, String category) {
+	public ItemInfo(int itemNumber, float cost, float price, String description, String category) {
 		super();
 		this.itemNumber = itemNumber;
 		this.cost = cost;

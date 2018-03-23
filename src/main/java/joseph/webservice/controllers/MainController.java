@@ -8,8 +8,7 @@ import org.springframework.boot.autoconfigure.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
-import joseph.webservice.pojos.ItemInfoResponse;
-import joseph.webservice.pojos.LoginRequest;
+import joseph.webservice.pojos.*;
 import joseph.webservice.utils.Dao;
 
 /*
@@ -23,21 +22,31 @@ ClothesWebservice-0.1.0.jar   You can run that, and it will do the same as if yo
 "mvnw spring-boot:run", then you can hit the url previously given.
 */
 
+@CrossOrigin
 @Controller
 @EnableAutoConfiguration
 @RequestMapping(value = "/items")
 public class MainController {
 
 	private final String getItems = "/getItems";
+	private final String addToCart = "/addToCart";
 
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
 	
     @GetMapping(value = getItems)
     @ResponseBody
-    List<ItemInfoResponse> getAccounts() throws SQLException {
+    List<ItemInfo> getAccounts() throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + getItems);
         return dao.getItems();
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, value = addToCart)
+    @ResponseBody
+    int addToCart(@RequestBody AddToCartRequest addToCartRequest) throws SQLException {
+    	Dao dao = new Dao();
+    	log.info("Recieved request to " + addToCart + " with " + addToCartRequest.toString());
+        return dao.addToCart(addToCartRequest);
     }
 }
 

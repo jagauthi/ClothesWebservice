@@ -28,10 +28,13 @@ public class Dao {
 	Connection conn;
 	
 	public static final String SELECT_FROM_USERS = "select * from UserAccounts ";
+	public static final String WHERE_USERID = "where userId = '";
 	public static final String WHERE_USERNAME = "where username = '";
 	public static final String INSERT_TO_USERS = "insert into UserAccounts ";
 	public static final String DELETE_FROM_USERS = "delete from UserAccounts ";
+	
 	public static final String SELECT_FROM_ITEMS = "select * from Items ";
+	public static final String INSERT_TO_CART = "insert into UserCart ";
 	
 	String sqlUser = "sql3205145";
 	String sqlPass = "rDlDd1QCsz";
@@ -193,17 +196,17 @@ public class Dao {
 		}
 	}
 	
-	public List<ItemInfoResponse> getItems() throws SQLException {
+	public List<ItemInfo> getItems() throws SQLException {
 		try {
 			log.info("Getting all items");
 			Statement stmt = conn.createStatement() ;
 			String query = SELECT_FROM_ITEMS + ";" ;
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
-			List<ItemInfoResponse> responseList = new ArrayList<ItemInfoResponse>();
+			List<ItemInfo> responseList = new ArrayList<ItemInfo>();
 			log.info("List of items: " );
 			while(rs.next()) {
-				ItemInfoResponse response = new ItemInfoResponse(rs.getInt("itemNumber"), rs.getFloat("cost"),
+				ItemInfo response = new ItemInfo(rs.getInt("itemNumber"), rs.getFloat("cost"),
 						rs.getFloat("price"), rs.getString("description"), rs.getString("category"));
 				log.info("\t" + response.toString() + "");
 				responseList.add(response);
@@ -213,11 +216,34 @@ public class Dao {
 		} 
 		catch (Exception e) {
 			log.log(Level.SEVERE, "Exception: " + e.getMessage());
-			ItemInfoResponse errorPacket = new ItemInfoResponse(0, 0, 0, e.getMessage(), "");
-			List<ItemInfoResponse> responseList = new ArrayList<ItemInfoResponse>();
+			ItemInfo errorPacket = new ItemInfo(0, 0, 0, e.getMessage(), "");
+			List<ItemInfo> responseList = new ArrayList<ItemInfo>();
 			responseList.add(errorPacket);
 			conn.close();
 			return responseList;
+		}
+	}
+	
+	public int addToCart(AddToCartRequest addToCartRequest) throws SQLException {
+		try {
+			Statement stmt = conn.createStatement() ;
+			int numRowsAffected = 0 ;
+			for(ItemInfo item : addToCartRequest.getItems()) {
+				log.info("Adding item to cart: " + item.getDescription());
+				String query = INSERT_TO_CART + "values"
+						+ "('" + addToCartRequest.getUser() + "', " + item.getItemNumber() + ");";
+				log.info("Query: " + query);
+				numRowsAffected += stmt.executeUpdate(query) ;
+				log.info("Added " + numRowsAffected + " items to cart");
+			}
+			conn.close();
+			return numRowsAffected;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			log.log(Level.SEVERE, e.getMessage());
+			conn.close();
+			return 0;
 		}
 	}
 }
