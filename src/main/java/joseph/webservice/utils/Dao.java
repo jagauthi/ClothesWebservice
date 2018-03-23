@@ -234,7 +234,7 @@ public class Dao {
 						+ "('" + addToCartRequest.getUser() + "', " + item.getItemNumber() + ");";
 				log.info("Query: " + query);
 				numRowsAffected += stmt.executeUpdate(query) ;
-				log.info("Added " + numRowsAffected + " items to cart"); 
+				log.info("Added " + numRowsAffected + " items to cart");
 			}
 			conn.close();
 			return numRowsAffected;
