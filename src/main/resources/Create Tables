@@ -6,3 +6,9 @@ CREATE TABLE UserAccounts (
     PRIMARY KEY (userId)
     UNIQUE (username)
 );
+
+
+CREATE TABLE UserCart (
+    username varchar(30) NOT NULL,
+    itemNumber int NOT NULL
+);

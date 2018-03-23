@@ -2,16 +2,16 @@ package joseph.webservice.pojos;
 
 import java.util.List;
 
-public class AddToCartRequest {
+public class UserItemsRequest {
 	
 	String user;
 	List<ItemInfo> items;
 
-	public AddToCartRequest() {
+	public UserItemsRequest() {
 		
 	}
 
-	public AddToCartRequest(String user, List<ItemInfo> items) {
+	public UserItemsRequest(String user, List<ItemInfo> items) {
 		super();
 		this.user = user;
 		this.items = items;

@@ -30,6 +30,7 @@ public class MainController {
 
 	private final String getItems = "/getItems";
 	private final String addToCart = "/addToCart";
+	private final String getCartForUser = "/getCartForUser";
 
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
 	
@@ -43,10 +44,18 @@ public class MainController {
     
     @RequestMapping(method = RequestMethod.POST, value = addToCart)
     @ResponseBody
-    int addToCart(@RequestBody AddToCartRequest addToCartRequest) throws SQLException {
+    int addToCart(@RequestBody UserItemsRequest addToCartRequest) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request to " + addToCart + " with " + addToCartRequest.toString());
         return dao.addToCart(addToCartRequest);
+    }
+    
+    @GetMapping(value = getCartForUser)
+    @ResponseBody
+    List<ItemInfo> getCartForUser(@RequestParam(value="username") String user) throws SQLException {
+    	Dao dao = new Dao();
+    	log.info("Recieved request: " + getCartForUser);
+        return dao.getCartForUser(user);
     }
 }
 

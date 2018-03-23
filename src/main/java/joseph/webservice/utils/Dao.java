@@ -34,6 +34,7 @@ public class Dao {
 	public static final String DELETE_FROM_USERS = "delete from UserAccounts ";
 	
 	public static final String SELECT_FROM_ITEMS = "select * from Items ";
+	public static final String SELECT_FROM_USER_CART = "select * from UserCart ";
 	public static final String INSERT_TO_CART = "insert into UserCart ";
 	
 	String sqlUser = "sql3205145";
@@ -224,7 +225,7 @@ public class Dao {
 		}
 	}
 	
-	public int addToCart(AddToCartRequest addToCartRequest) throws SQLException {
+	public int addToCart(UserItemsRequest addToCartRequest) throws SQLException {
 		try {
 			Statement stmt = conn.createStatement() ;
 			int numRowsAffected = 0 ;
@@ -244,6 +245,38 @@ public class Dao {
 			log.log(Level.SEVERE, e.getMessage());
 			conn.close();
 			return 0;
+		}
+	}
+	
+	public List<ItemInfo> getCartForUser(String username) throws SQLException {
+		UserItemsRequest response;
+		try {
+			log.info("Getting cart for " + username);
+			Statement stmt = conn.createStatement() ;
+			String query = "select i.itemNumber, i.cost, i.price, i.description, i.category "
+			 + "from Items i, UserCart c "
+			 + "where c.username = '" + username 
+			 + "' and c.itemNumber = i.itemNumber";
+			 
+			log.info("Query: " + query);
+			ResultSet rs = stmt.executeQuery(query) ;
+			List<ItemInfo> itemList = new ArrayList<ItemInfo>();
+			while(rs.next()) {
+				itemList.add( new ItemInfo(rs.getInt("itemNumber"), rs.getFloat("cost"),
+						rs.getFloat("price"), rs.getString("description"), rs.getString("category")) );
+			}
+			log.info("Returning: " + itemList);
+			conn.close();
+			return itemList;
+		} 
+		catch (Exception e) {
+			log.log(Level.SEVERE, "Exception: " + e.getMessage());
+			ItemInfo errorPacket = new ItemInfo(0, 0, 0, e.getMessage(), "");
+			List<ItemInfo> itemList = new ArrayList<ItemInfo>();
+			itemList.add(errorPacket);
+			log.info("Returning: " + itemList);
+			conn.close();
+			return itemList;
 		}
 	}
 }
