@@ -28,14 +28,16 @@ public class Dao {
 	Connection conn;
 	
 	public static final String SELECT_FROM_USERS = "select * from UserAccounts ";
-	public static final String WHERE_USERID = "where userId = '";
-	public static final String WHERE_USERNAME = "where username = '";
 	public static final String INSERT_TO_USERS = "insert into UserAccounts ";
 	public static final String DELETE_FROM_USERS = "delete from UserAccounts ";
-	
 	public static final String SELECT_FROM_ITEMS = "select * from Items ";
 	public static final String SELECT_FROM_USER_CART = "select * from UserCart ";
-	public static final String INSERT_TO_CART = "insert into UserCart ";
+	public static final String INSERT_TO_USER_CART = "insert into UserCart ";
+	public static final String DELETE_FROM_USER_CART = "delete from UserCart ";
+	public static final String SELECT_CART = "select i.itemNumber, i.cost, i.price, i.description, i.category ";
+	public static final String WHERE_USERID = "where userId = '";
+	public static final String WHERE_USERNAME = "where username = '";
+	public static final String AND_ITEMNUMBER = "and itemNumber = ";
 	
 	String sqlUser = "sql3205145";
 	String sqlPass = "rDlDd1QCsz";
@@ -205,7 +207,7 @@ public class Dao {
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
 			List<ItemInfo> responseList = new ArrayList<ItemInfo>();
-			log.info("List of items: " );
+			log.info("Returning catalog: " );
 			while(rs.next()) {
 				ItemInfo response = new ItemInfo(rs.getInt("itemNumber"), rs.getFloat("cost"),
 						rs.getFloat("price"), rs.getString("description"), rs.getString("category"));
@@ -231,7 +233,7 @@ public class Dao {
 			int numRowsAffected = 0 ;
 			for(ItemInfo item : addToCartRequest.getItems()) {
 				log.info("Adding item to cart: " + item.getDescription());
-				String query = INSERT_TO_CART + "values"
+				String query = INSERT_TO_USER_CART + "values"
 						+ "('" + addToCartRequest.getUser() + "', " + item.getItemNumber() + ");";
 				log.info("Query: " + query);
 				numRowsAffected += stmt.executeUpdate(query) ;
@@ -249,18 +251,17 @@ public class Dao {
 	}
 	
 	public List<ItemInfo> getCartForUser(String username) throws SQLException {
-		UserItemsRequest response;
+		List<ItemInfo> itemList;
 		try {
 			log.info("Getting cart for " + username);
 			Statement stmt = conn.createStatement() ;
-			String query = "select i.itemNumber, i.cost, i.price, i.description, i.category "
-			 + "from Items i, UserCart c "
-			 + "where c.username = '" + username 
-			 + "' and c.itemNumber = i.itemNumber";
+			String query = SELECT_CART + "from Items i, UserCart c "
+					 + "where c.username = '" + username 
+					 + "' and c.itemNumber = i.itemNumber";
 			 
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
-			List<ItemInfo> itemList = new ArrayList<ItemInfo>();
+			itemList = new ArrayList<ItemInfo>();
 			while(rs.next()) {
 				itemList.add( new ItemInfo(rs.getInt("itemNumber"), rs.getFloat("cost"),
 						rs.getFloat("price"), rs.getString("description"), rs.getString("category")) );
@@ -272,7 +273,48 @@ public class Dao {
 		catch (Exception e) {
 			log.log(Level.SEVERE, "Exception: " + e.getMessage());
 			ItemInfo errorPacket = new ItemInfo(0, 0, 0, e.getMessage(), "");
-			List<ItemInfo> itemList = new ArrayList<ItemInfo>();
+			itemList = new ArrayList<ItemInfo>();
+			itemList.add(errorPacket);
+			log.info("Returning: " + itemList);
+			conn.close();
+			return itemList;
+		}
+	}
+	
+	public List<ItemInfo> removeFromCart(UserItemsRequest removeFromCartRequest) throws SQLException {
+		List<ItemInfo> itemList = new ArrayList<ItemInfo>();
+		try {			
+			String query;
+			int numRowsAffected = 0;
+			Statement stmt = conn.createStatement();
+			for(ItemInfo item : removeFromCartRequest.getItems()) {
+				log.info("\tDeleting from cart: " + item.getDescription());
+				query = DELETE_FROM_USER_CART + WHERE_USERNAME + removeFromCartRequest.getUser() + "' "
+						+ AND_ITEMNUMBER + item.getItemNumber() + ";";
+				log.info("\tQuery: " + query);
+				numRowsAffected += stmt.executeUpdate(query) ;
+			}
+			log.info("Deleted " + numRowsAffected + " items");
+			
+			log.info("Getting cart for " + removeFromCartRequest.getUser());
+			query = SELECT_CART + "from Items i, UserCart c "
+			 + "where c.username = '" + removeFromCartRequest.getUser() 
+			 + "' and c.itemNumber = i.itemNumber";
+			log.info("Query: " + query);
+			ResultSet rs = stmt.executeQuery(query) ;
+			while(rs.next()) {
+				itemList.add( new ItemInfo(rs.getInt("itemNumber"), rs.getFloat("cost"),
+						rs.getFloat("price"), rs.getString("description"), rs.getString("category")) );
+			}
+			log.info("Returning: " + itemList);
+			
+			conn.close();
+			return itemList;
+		} 
+		catch (Exception e) {
+			log.log(Level.SEVERE, "Exception: " + e.getMessage());
+			ItemInfo errorPacket = new ItemInfo(0, 0, 0, e.getMessage(), "");
+			itemList = new ArrayList<ItemInfo>();
 			itemList.add(errorPacket);
 			log.info("Returning: " + itemList);
 			conn.close();

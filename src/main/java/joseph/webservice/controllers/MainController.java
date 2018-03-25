@@ -31,17 +31,29 @@ public class MainController {
 	private final String getItems = "/getItems";
 	private final String addToCart = "/addToCart";
 	private final String getCartForUser = "/getCartForUser";
+	private final String removeFromCart = "/removeFromCart";
 
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
-	
+    
+    /**
+     * Retrieves the catalog of items
+     *
+     * @return List of items
+     */
     @GetMapping(value = getItems)
     @ResponseBody
-    List<ItemInfo> getAccounts() throws SQLException {
+    List<ItemInfo> getItems() throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + getItems);
         return dao.getItems();
     }
     
+    /**
+     * Adds the items from the specified user's cart
+     *
+     * @param  addToCartRequest 	User and their cart
+     * @return Number affected rows (int)
+     */
     @RequestMapping(method = RequestMethod.POST, value = addToCart)
     @ResponseBody
     int addToCart(@RequestBody UserItemsRequest addToCartRequest) throws SQLException {
@@ -50,12 +62,33 @@ public class MainController {
         return dao.addToCart(addToCartRequest);
     }
     
+    /**
+     * Gets the user's cart
+     *
+     * @param  user Username
+     * @return 	User's cart (List of items)
+     */
     @GetMapping(value = getCartForUser)
     @ResponseBody
     List<ItemInfo> getCartForUser(@RequestParam(value="username") String user) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + getCartForUser);
         return dao.getCartForUser(user);
+    }
+    
+    /**
+     * Removes the items from the specified user's cart, 
+     * and just returns their updated cart. 
+     *
+     * @param  addToCartRequest 	User and their cart
+     * @return User's updated cart (List of items)
+     */
+    @RequestMapping(method = RequestMethod.POST, value = removeFromCart)
+    @ResponseBody
+    List<ItemInfo> removeFromCart(@RequestBody UserItemsRequest removeFromCartRequest) throws SQLException {
+    	Dao dao = new Dao();
+    	log.info("Recieved request to " + removeFromCart + " with " + removeFromCartRequest.toString());
+        return dao.removeFromCart(removeFromCartRequest);
     }
 }
 
