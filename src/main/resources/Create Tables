@@ -3,7 +3,7 @@ CREATE TABLE UserAccounts (
     username varchar(30) NOT NULL,
     password varchar(30),
     email varchar(50),
-    PRIMARY KEY (userId)
+    PRIMARY KEY (userId),
     UNIQUE (username)
 );
 
@@ -12,3 +12,16 @@ CREATE TABLE UserCart (
     username varchar(30) NOT NULL,
     itemNumber int NOT NULL
 );
+
+
+CREATE TABLE Items (
+    itemNumber int NOT NULL AUTO_INCREMENT,
+    cost float NOT NULL,
+    price float NOT NULL,
+    description varchar(30) NOT NULL,
+    category varchar(30) NOT NULL,
+    PRIMARY KEY (itemNumber)
+);
+
+
+
