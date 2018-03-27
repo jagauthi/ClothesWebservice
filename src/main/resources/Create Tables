@@ -10,7 +10,8 @@ CREATE TABLE UserAccounts (
 
 CREATE TABLE UserCart (
     username varchar(30) NOT NULL,
-    itemNumber int NOT NULL
+    itemNumber int NOT NULL,
+    quantity int NOT NULL
 );
 
 

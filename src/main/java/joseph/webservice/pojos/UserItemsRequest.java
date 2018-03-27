@@ -2,6 +2,10 @@ package joseph.webservice.pojos;
 
 import java.util.List;
 
+/**
+ * @param user		String
+ * @param items	List of ItemInfo
+ */
 public class UserItemsRequest {
 	
 	String user;

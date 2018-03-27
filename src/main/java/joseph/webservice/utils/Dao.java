@@ -34,7 +34,10 @@ public class Dao {
 	public static final String SELECT_FROM_USER_CART = "select * from UserCart ";
 	public static final String INSERT_TO_USER_CART = "insert into UserCart ";
 	public static final String DELETE_FROM_USER_CART = "delete from UserCart ";
-	public static final String SELECT_CART = "select i.itemNumber, i.cost, i.price, i.description, i.category ";
+	public static final String UPDATE_USER_CART = "update UserCart ";
+	public static final String SELECT_CART = "select i.itemNumber, i.cost, i.price, i.description, i.category, c.quantity ";
+	public static final String SET_QUANTITY = "set quantity = ";
+	
 	public static final String WHERE_USERID = "where userId = '";
 	public static final String WHERE_USERNAME = "where username = '";
 	public static final String AND_ITEMNUMBER = "and itemNumber = ";
@@ -44,6 +47,10 @@ public class Dao {
 	String sqlAddress = "jdbc:mysql://sql3.freesqldatabase.com:3306/sql3205145";
 	
 	public Dao() {
+		connectDao();
+	}
+	
+	public void connectDao() {
 		conn = null;
 		try{
 			log.info("Connecting to " + sqlAddress);
@@ -227,17 +234,23 @@ public class Dao {
 		}
 	}
 	
-	public int addToCart(UserItemsRequest addToCartRequest) throws SQLException {
+	public int addToCart(UserCartInfo addToCartRequest) throws SQLException {
 		try {
-			Statement stmt = conn.createStatement() ;
 			int numRowsAffected = 0 ;
-			for(ItemInfo item : addToCartRequest.getItems()) {
-				log.info("Adding item to cart: " + item.getDescription());
-				String query = INSERT_TO_USER_CART + "values"
-						+ "('" + addToCartRequest.getUser() + "', " + item.getItemNumber() + ");";
-				log.info("Query: " + query);
-				numRowsAffected += stmt.executeUpdate(query) ;
-				log.info("Added " + numRowsAffected + " items to cart");
+			List<CartItem> currentCart = getCartForUser(addToCartRequest.getUsername());
+			this.connectDao();
+			for(CartItem item : addToCartRequest.getCart()) {
+				log.info("Adding to cart: " + item);
+				boolean exists = false;
+				for(CartItem cartItem : currentCart) {
+					if (cartItem.getItem().getItemNumber() == item.getItem().getItemNumber()) {
+						numRowsAffected += updateCart(addToCartRequest.getUsername(), cartItem, item.getQuantity());
+						exists = true;
+					}
+				}
+				if(!exists) {
+					numRowsAffected += insertToCart(addToCartRequest.getUsername(), item);
+				}
 			}
 			conn.close();
 			return numRowsAffected;
@@ -250,8 +263,46 @@ public class Dao {
 		}
 	}
 	
-	public List<ItemInfo> getCartForUser(String username) throws SQLException {
-		List<ItemInfo> itemList;
+	private int updateCart(String username, CartItem item, int quantity) throws SQLException {
+		int numRowsAffected = 0;
+		try {
+			Statement stmt = conn.createStatement() ;
+			log.info("Updating item quantity in cart: " + item.getItem().getDescription());
+			String query = UPDATE_USER_CART + SET_QUANTITY
+					+ (item.getQuantity()+quantity) + " " + WHERE_USERNAME 
+					+ username + "' " + AND_ITEMNUMBER
+					+ item.getItem().getItemNumber() + ";";
+			log.info("Query: " + query);
+			numRowsAffected += stmt.executeUpdate(query) ;
+			log.info("Added " + numRowsAffected + " items to cart");
+			conn.close();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return numRowsAffected;
+	}
+	
+	private int insertToCart(String username, CartItem item) throws SQLException {
+		int numRowsAffected = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			log.info("Adding item to cart: " + item.getItem().getDescription());
+			String query = INSERT_TO_USER_CART + "values"
+					+ "('" + username + "', " + item.getItem().getItemNumber() + ", " + item.getQuantity() + ");";
+			log.info("Query: " + query);
+			numRowsAffected += stmt.executeUpdate(query);
+			log.info("Added " + numRowsAffected + " items to cart");
+			conn.close();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return numRowsAffected;
+	}
+	
+	public List<CartItem> getCartForUser(String username) throws SQLException {
+		List<CartItem> itemList;
 		try {
 			log.info("Getting cart for " + username);
 			Statement stmt = conn.createStatement() ;
@@ -261,10 +312,11 @@ public class Dao {
 			 
 			log.info("Query: " + query);
 			ResultSet rs = stmt.executeQuery(query) ;
-			itemList = new ArrayList<ItemInfo>();
+			itemList = new ArrayList<CartItem>();
 			while(rs.next()) {
-				itemList.add( new ItemInfo(rs.getInt("itemNumber"), rs.getFloat("cost"),
-						rs.getFloat("price"), rs.getString("description"), rs.getString("category")) );
+				itemList.add( new CartItem( new ItemInfo(rs.getInt("itemNumber"), rs.getFloat("cost"),
+						rs.getFloat("price"), rs.getString("description"), rs.getString("category") ), 
+						rs.getInt("quantity")) );
 			}
 			log.info("Returning: " + itemList);
 			conn.close();
@@ -272,8 +324,8 @@ public class Dao {
 		} 
 		catch (Exception e) {
 			log.log(Level.SEVERE, "Exception: " + e.getMessage());
-			ItemInfo errorPacket = new ItemInfo(0, 0, 0, e.getMessage(), "");
-			itemList = new ArrayList<ItemInfo>();
+			CartItem errorPacket = new CartItem(new ItemInfo(0, 0, 0, e.getMessage(), ""), 0);
+			itemList = new ArrayList<CartItem>();
 			itemList.add(errorPacket);
 			log.info("Returning: " + itemList);
 			conn.close();
@@ -281,44 +333,55 @@ public class Dao {
 		}
 	}
 	
-	public List<ItemInfo> removeFromCart(UserItemsRequest removeFromCartRequest) throws SQLException {
-		List<ItemInfo> itemList = new ArrayList<ItemInfo>();
-		try {			
-			String query;
-			int numRowsAffected = 0;
-			Statement stmt = conn.createStatement();
-			for(ItemInfo item : removeFromCartRequest.getItems()) {
-				log.info("\tDeleting from cart: " + item.getDescription());
-				query = DELETE_FROM_USER_CART + WHERE_USERNAME + removeFromCartRequest.getUser() + "' "
-						+ AND_ITEMNUMBER + item.getItemNumber() + ";";
-				log.info("\tQuery: " + query);
-				numRowsAffected += stmt.executeUpdate(query) ;
+	public List<CartItem> removeFromCart(UserCartInfo removeFromCartRequest) throws SQLException {
+		try {
+			int numRowsAffected = 0 ;
+			List<CartItem> currentCart = getCartForUser(removeFromCartRequest.getUsername());
+			this.connectDao();
+			for(CartItem item : removeFromCartRequest.getCart()) {
+				log.info("Removing item from cart: " + item);
+				boolean exists = false;
+				for(CartItem cartItem : currentCart) {
+					if (cartItem.getItem().getItemNumber() == item.getItem().getItemNumber()) {
+						if(cartItem.getQuantity() > item.getQuantity()) {
+							numRowsAffected += updateCart(removeFromCartRequest.getUsername(), cartItem, -item.getQuantity());
+						}
+						else {
+							numRowsAffected += deleteFromCart(removeFromCartRequest.getUsername(), cartItem);
+						}
+						exists = true;
+					}
+				}
+				if(!exists) {
+					log.log(Level.SEVERE, 
+							"Somehow we got a request to remove from cart something that doesn't even exist in the user's cart....");
+				}
 			}
-			log.info("Deleted " + numRowsAffected + " items");
-			
-			log.info("Getting cart for " + removeFromCartRequest.getUser());
-			query = SELECT_CART + "from Items i, UserCart c "
-			 + "where c.username = '" + removeFromCartRequest.getUser() 
-			 + "' and c.itemNumber = i.itemNumber";
-			log.info("Query: " + query);
-			ResultSet rs = stmt.executeQuery(query) ;
-			while(rs.next()) {
-				itemList.add( new ItemInfo(rs.getInt("itemNumber"), rs.getFloat("cost"),
-						rs.getFloat("price"), rs.getString("description"), rs.getString("category")) );
-			}
-			log.info("Returning: " + itemList);
-			
-			conn.close();
-			return itemList;
+			this.connectDao();
+			return getCartForUser(removeFromCartRequest.getUsername());
 		} 
 		catch (Exception e) {
-			log.log(Level.SEVERE, "Exception: " + e.getMessage());
-			ItemInfo errorPacket = new ItemInfo(0, 0, 0, e.getMessage(), "");
-			itemList = new ArrayList<ItemInfo>();
-			itemList.add(errorPacket);
-			log.info("Returning: " + itemList);
+			e.printStackTrace();
+			log.log(Level.SEVERE, e.getMessage());
 			conn.close();
-			return itemList;
+			return null;
 		}
+	}
+	
+	private int deleteFromCart(String username, CartItem item) throws SQLException {
+		int numRowsAffected = 0;
+		try {
+			Statement stmt = conn.createStatement() ;
+			log.info("\tDeleting from cart: " + item.getItem().getDescription());
+			String query = DELETE_FROM_USER_CART + WHERE_USERNAME + username + "' "
+					+ AND_ITEMNUMBER + item.getItem().getItemNumber() + ";";
+			log.info("\tQuery: " + query);
+			numRowsAffected += stmt.executeUpdate(query);
+			conn.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return numRowsAffected;
 	}
 }

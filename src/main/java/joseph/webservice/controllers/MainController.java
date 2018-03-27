@@ -56,7 +56,7 @@ public class MainController {
      */
     @RequestMapping(method = RequestMethod.POST, value = addToCart)
     @ResponseBody
-    int addToCart(@RequestBody UserItemsRequest addToCartRequest) throws SQLException {
+    int addToCart(@RequestBody UserCartInfo addToCartRequest) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request to " + addToCart + " with " + addToCartRequest.toString());
         return dao.addToCart(addToCartRequest);
@@ -66,11 +66,11 @@ public class MainController {
      * Gets the user's cart
      *
      * @param  user Username
-     * @return 	User's cart (List of items)
+     * @return 	User's cart (List of CartItems)
      */
     @GetMapping(value = getCartForUser)
     @ResponseBody
-    List<ItemInfo> getCartForUser(@RequestParam(value="username") String user) throws SQLException {
+    List<CartItem> getCartForUser(@RequestParam(value="username") String user) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request: " + getCartForUser);
         return dao.getCartForUser(user);
@@ -80,12 +80,12 @@ public class MainController {
      * Removes the items from the specified user's cart, 
      * and just returns their updated cart. 
      *
-     * @param  addToCartRequest 	User and their cart
-     * @return User's updated cart (List of items)
+     * @param  removeFromCartRequest 	User and their cart
+     * @return User's updated cart (List of CartItem)
      */
     @RequestMapping(method = RequestMethod.POST, value = removeFromCart)
     @ResponseBody
-    List<ItemInfo> removeFromCart(@RequestBody UserItemsRequest removeFromCartRequest) throws SQLException {
+    List<CartItem> removeFromCart(@RequestBody UserCartInfo removeFromCartRequest) throws SQLException {
     	Dao dao = new Dao();
     	log.info("Recieved request to " + removeFromCart + " with " + removeFromCartRequest.toString());
         return dao.removeFromCart(removeFromCartRequest);
