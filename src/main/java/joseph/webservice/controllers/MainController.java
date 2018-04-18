@@ -18,7 +18,7 @@ Then you can go to "http://localhost:8080/healthCheck".
 
 Another option is go to the project folder and run "mvnw clean package". Then if you go to the project
 folder, go to the target folder, there will be something called
-ClothesWebservice-0.1.0.jar   You can run that, and it will do the same as if you ran
+GameWebservice-0.1.0.jar   You can run that, and it will do the same as if you ran
 "mvnw spring-boot:run", then you can hit the url previously given.
 */
 
