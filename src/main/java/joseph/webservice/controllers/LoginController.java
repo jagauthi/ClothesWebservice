@@ -43,7 +43,6 @@ public class LoginController {
 	
 	@RequestMapping(value= "/**", method=RequestMethod.OPTIONS)
 	public void corsHeaders(HttpServletResponse response) {
-		log.info("HELLO!!!");
 	    response.addHeader("Access-Control-Allow-Origin", "*");
 	    response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 	    response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with");
@@ -52,7 +51,6 @@ public class LoginController {
 	
 	@RequestMapping(value= "/addUser", method=RequestMethod.OPTIONS)
 	public void corsHeaders2(HttpServletResponse response) {
-		log.info("HELLO!!!");
 	    response.addHeader("Access-Control-Allow-Origin", "*");
 	    response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 	    response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with");
@@ -75,22 +73,6 @@ public class LoginController {
     	Dao dao = new Dao();
     	log.info("Recieved request to " + login + " with " + loginRequest.toString());
         return dao.login(loginRequest);
-    }
-
-    @GetMapping(value = getAccounts)
-    @ResponseBody
-    List<LoginRequest> getAccounts() throws SQLException {
-    	Dao dao = new Dao();
-    	log.info("Recieved request: " + getAccounts);
-        return dao.getAccounts();
-    }
-
-    @GetMapping(value = getAccount)
-    @ResponseBody
-    LoginRequest getAccount(@RequestParam(value="username") String user) throws SQLException {
-    	Dao dao = new Dao();
-    	log.info("Recieved request: " + getAccount);
-        return dao.getAccount(user);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = addAccount)

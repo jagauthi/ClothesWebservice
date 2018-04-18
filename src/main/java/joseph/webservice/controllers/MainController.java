@@ -25,13 +25,12 @@ GameWebservice-0.1.0.jar   You can run that, and it will do the same as if you r
 @CrossOrigin
 @Controller
 @EnableAutoConfiguration
-@RequestMapping(value = "/items")
+@RequestMapping(value = "/game")
 public class MainController {
 
 	private final String getItems = "/getItems";
-	private final String addToCart = "/addToCart";
-	private final String getCartForUser = "/getCartForUser";
-	private final String removeFromCart = "/removeFromCart";
+	private final String addCharacter = "/addCharacter";
+	private final String deleteCharacter = "/deleteCharacter";
 
 	private static final Logger log = Logger.getLogger( Dao.class.getName() );
     
@@ -49,31 +48,17 @@ public class MainController {
     }
     
     /**
-     * Adds the items from the specified user's cart
+     * Adds the character
      *
      * @param  addToCartRequest 	User and their cart
      * @return Number affected rows (int)
      */
-    @RequestMapping(method = RequestMethod.POST, value = addToCart)
+    @RequestMapping(method = RequestMethod.POST, value = addCharacter)
     @ResponseBody
-    int addToCart(@RequestBody UserCartInfo addToCartRequest) throws SQLException {
+    int addCharacter(@RequestBody UserCharacterRequest addCharacterRequest) throws SQLException {
     	Dao dao = new Dao();
-    	log.info("Recieved request to " + addToCart + " with " + addToCartRequest.toString());
-        return dao.addToCart(addToCartRequest);
-    }
-    
-    /**
-     * Gets the user's cart
-     *
-     * @param  user Username
-     * @return 	User's cart (List of CartItems)
-     */
-    @GetMapping(value = getCartForUser)
-    @ResponseBody
-    List<CartItem> getCartForUser(@RequestParam(value="username") String user) throws SQLException {
-    	Dao dao = new Dao();
-    	log.info("Recieved request: " + getCartForUser);
-        return dao.getCartForUser(user);
+    	log.info("Recieved request to " + addCharacter + " with " + addCharacterRequest.toString());
+        return dao.addCharacter(addCharacterRequest);
     }
     
     /**
@@ -83,12 +68,12 @@ public class MainController {
      * @param  removeFromCartRequest 	User and their cart
      * @return User's updated cart (List of CartItem)
      */
-    @RequestMapping(method = RequestMethod.POST, value = removeFromCart)
+    @RequestMapping(method = RequestMethod.POST, value = deleteCharacter)
     @ResponseBody
-    List<CartItem> removeFromCart(@RequestBody UserCartInfo removeFromCartRequest) throws SQLException {
+    int deleteCharacter(@RequestBody UserCharacterRequest removeFromCartRequest) throws SQLException {
     	Dao dao = new Dao();
-    	log.info("Recieved request to " + removeFromCart + " with " + removeFromCartRequest.toString());
-        return dao.removeFromCart(removeFromCartRequest);
+    	log.info("Recieved request to " + deleteCharacter + " with " + removeFromCartRequest.toString());
+        return dao.deleteCharacter(removeFromCartRequest);
     }
 }
 

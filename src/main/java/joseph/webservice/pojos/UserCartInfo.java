@@ -9,13 +9,13 @@ import java.util.List;
 public class UserCartInfo {
 	
 	String username;
-	List<CartItem> cart;	
+	List<Character> cart;	
 	
 	public UserCartInfo() {
 		super();
 	}
 	
-	public UserCartInfo(String username, List<CartItem> cart) {
+	public UserCartInfo(String username, List<Character> cart) {
 		super();
 		this.username = username;
 		this.cart = cart;
@@ -32,10 +32,10 @@ public class UserCartInfo {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	public List<CartItem> getCart() {
+	public List<Character> getCart() {
 		return cart;
 	}
-	public void setCart(List<CartItem> cart) {
+	public void setCart(List<Character> cart) {
 		this.cart = cart;
 	}
 
