@@ -32,7 +32,7 @@ public class MainController {
 	private final String addCharacter = "/addCharacter";
 	private final String deleteCharacter = "/deleteCharacter";
 
-	private static final Logger log = Logger.getLogger( Dao.class.getName() );
+	private static final Logger log = Logger.getLogger( MainController.class.getName() );
     
     /**
      * Retrieves the catalog of items

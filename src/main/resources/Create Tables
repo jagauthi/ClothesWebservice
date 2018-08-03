@@ -8,14 +8,13 @@ CREATE TABLE UserAccounts (
 );
 
 
-CREATE TABLE UserCart (
+CREATE TABLE UserCharacters (
     username varchar(30) NOT NULL,
-    itemNumber int NOT NULL,
-    quantity int NOT NULL
+    characterName varchar(30) NOT NULL
 );
 
 
-CREATE TABLE Items (
+CREATE TABLE GameItems (
     itemNumber int NOT NULL AUTO_INCREMENT,
     cost float NOT NULL,
     price float NOT NULL,

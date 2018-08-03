@@ -1,6 +1,13 @@
 
 package joseph.webservice;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -16,8 +23,13 @@ GameWebservice-0.1.0.jar   You can run that, and it will do the same as if you r
 
 @SpringBootApplication
 public class WebserviceApplication {
+	
+	public WebserviceApplication() throws InterruptedException {
+		
+	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
+		//new WebserviceApplication();
 		SpringApplication.run(WebserviceApplication.class, args);
 	}
 }
